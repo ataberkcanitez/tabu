@@ -35,7 +35,7 @@ func NewManager() *Manager {
 
 func (m *Manager) setupEventHandlers() {
 	m.handlers[EventSelectTeam] = SelectTeam
-	//m.handlers[Event]
+	m.handlers[EventReady] = Ready
 }
 
 func (m *Manager) CreateGame(w http.ResponseWriter, r *http.Request) {
@@ -159,6 +159,27 @@ func SelectTeam(event Event, player *Player) error {
 	data, err := json.Marshal(switchedTeam)
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload: %v", err)
+	}
+
+	outgoingEvent := Event{
+		Type:    EventTeamUpdate,
+		Payload: data,
+	}
+
+	for p := range game.AllPlayers {
+		p.egress <- outgoingEvent
+	}
+
+	return nil
+}
+
+func Ready(_ Event, p *Player) error {
+	p.ready = true
+	game := p.manager.Games[p.gameId]
+	data, err := json.Marshal(game)
+	if err != nil {
+		log.Println(err)
+		return err
 	}
 
 	outgoingEvent := Event{

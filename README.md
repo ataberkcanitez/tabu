@@ -6,6 +6,7 @@ An online version of the Tabu game, where players can play in real time with the
 ## TODO:
 * [x] Add SelectTeam event
 * [x] Notify uses after player switched the team
+* [x] Add `Ready` event. After all users are ready, game can start
 * [ ] Start the game with rounds: When the corresponding team that plays that round won't see the tabu card, other team will see the tabu card Each round will take 60 seconds. 
 * [ ] Add Round End: When round finished notify users that round finished
   and there will be 5 seconds delay before next round starts
