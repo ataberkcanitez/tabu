@@ -10,13 +10,14 @@ type Event struct {
 type EventHandler func(event Event, p *Player) error
 
 const (
-	EventSelectTeam = "select_team"
-	EventTeamUpdate = "team_update"
-	EventReady      = "ready"
-	EventGameStart  = "game_start"
-	EventRoundEnd   = "round_end"
-	EventCorrect    = "correct"
-	EventIncorrect  = "incorrect"
+	EventSelectTeam      = "select_team"
+	EventTeamUpdate      = "team_update"
+	EventReady           = "ready"
+	EventGameStart       = "game_start"
+	EventGameStartUpdate = "game_start_update"
+	EventRoundEnd        = "round_end"
+	EventCorrect         = "correct"
+	EventIncorrect       = "incorrect"
 )
 
 type SelectTeamEvent struct {

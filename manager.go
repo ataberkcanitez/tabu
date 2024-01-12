@@ -36,6 +36,7 @@ func NewManager() *Manager {
 func (m *Manager) setupEventHandlers() {
 	m.handlers[EventSelectTeam] = SelectTeam
 	m.handlers[EventReady] = Ready
+	m.handlers[EventGameStart] = GameStart
 }
 
 func (m *Manager) CreateGame(w http.ResponseWriter, r *http.Request) {
@@ -161,15 +162,7 @@ func SelectTeam(event Event, player *Player) error {
 		return fmt.Errorf("failed to marshal payload: %v", err)
 	}
 
-	outgoingEvent := Event{
-		Type:    EventTeamUpdate,
-		Payload: data,
-	}
-
-	for p := range game.AllPlayers {
-		p.egress <- outgoingEvent
-	}
-
+	sendEvent(EventTeamUpdate, data, game.AllPlayers)
 	return nil
 }
 
@@ -182,14 +175,48 @@ func Ready(_ Event, p *Player) error {
 		return err
 	}
 
-	outgoingEvent := Event{
-		Type:    EventTeamUpdate,
-		Payload: data,
+	sendEvent(EventTeamUpdate, data, game.AllPlayers)
+	return nil
+}
+
+func GameStart(_ Event, p *Player) error {
+	game := p.manager.Games[p.gameId]
+	isGameStarted := game.Start()
+
+	data, err := prepareGameStartedResponse(isGameStarted)
+	if err != nil {
+		log.Println(err)
+		return err
 	}
 
-	for p := range game.AllPlayers {
+	sendEvent(EventGameStartUpdate, data, game.AllPlayers)
+	return nil
+}
+
+func prepareGameStartedResponse(started bool) (json.RawMessage, error) {
+	type GameStartResponse struct {
+		IsGameStarted bool   `json:"is_game_started"`
+		error         string `json:"error"`
+	}
+
+	resp := &GameStartResponse{}
+	if !started {
+		resp.IsGameStarted = false
+		resp.error = "Not all players are ready"
+	} else {
+		resp.IsGameStarted = true
+		resp.error = ""
+	}
+
+	return json.Marshal(resp)
+}
+
+func sendEvent(eventType string, payload json.RawMessage, players PlayerList) {
+	outgoingEvent := Event{
+		Type:    eventType,
+		Payload: payload,
+	}
+	for p := range players {
 		p.egress <- outgoingEvent
 	}
-
-	return nil
 }

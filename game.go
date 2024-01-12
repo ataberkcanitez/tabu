@@ -38,3 +38,16 @@ func (g *Game) SwitchTeam(player *Player, selectedTeam string) (*Game, error) {
 
 	return g, nil
 }
+
+func (g *Game) Start() bool {
+	okToStart := true
+	for player := range g.AllPlayers {
+		if !player.ready {
+			okToStart = false
+			break
+		}
+	}
+
+	g.IsStarted = okToStart
+	return okToStart
+}
