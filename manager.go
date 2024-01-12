@@ -115,7 +115,8 @@ func (m *Manager) routeEvent(event Event, p *Player) interface{} {
 		}
 		return nil
 	}
-	return fmt.Errorf("there is no such event type")
+
+	return fmt.Errorf("there is no such event type : %v", event.Type)
 }
 
 func (m *Manager) removePlayer(player *Player) {

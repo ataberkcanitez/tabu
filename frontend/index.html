@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Tabu</title>
+</head>
+<body>
+<h1 class="text-center">Tabu</h1>
+
+<div class="container" id="loginRow">
+    <div class="row">
+        <div class="col-md-12 mb-5" style="background: #F5F5F5;">
+            <h2>Create Game</h2>
+            <button id="createGameBtn" type="button" class="btn btn-primary" onclick="createGame()">Create</button>
+            <p id="showCreatedGameIdLabel">Created game ID:</p>
+        </div>
+        <div class="col-md-12" style="background: #F5F5F5">
+            <h2>Join Game</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username">
+            </div>
+            <div class="form-group">
+                <label for="gameId">Game ID:</label>
+                <input type="text" class="form-control" id="gameId">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="joinGame()">Join</button>
+        </div>
+    </div>
+</div>
+<div class="container" id="gameRow" style="display: none;">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card" id="redTeamCard">
+                <div class="card-body">
+                    <h5 class="card-title">Red Team</h5>
+                    <button type="button" class="btn btn-outline-danger" onclick="joinTeam('red');">Join</button>
+                </div>
+                <ul class="list-group list-group-flush" id="redTeamList">
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card" id="blueTeamCard">
+                <div class="card-body">
+                    <h5 class="card-title">Red Team</h5>
+
+                    <button type="button" class="btn btn-outline-primary" onclick="joinTeam('blue')">Join</button>
+                </div>
+                <ul class="list-group list-group-flush" id="blueTeamList">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    var game;
+    var username = "";
+
+    class Game {
+        constructor (gameId, redTeamPlayers, blueTeamPlayers, allPlayers, isStarted, scores) {
+            this.gameId = gameId;
+            this.redTeamPlayers = redTeamPlayers || [];
+            this.blueTeamPlayers = blueTeamPlayers || [];
+            this.allPlayers = allPlayers || [];
+            this.isStarted = isStarted;
+            this.scores = scores;
+        }
+    }
+
+    class Event {
+        constructor(type, payload) {
+            this.type = type;
+            this.payload = payload;
+        }
+    }
+
+    class TeamUpdateEvent {
+        constructor (evt) {
+            this.allPlayers = evt.all_players;
+            this.blueTeamPlayers = evt.blue_team;
+            this.redTeamPlayers = evt.red_team;
+            this.gameId = evt.game_id;
+            this.isStarted = evt.is_started;
+            this.scores = evt.scores;
+        }
+    }
+
+    class JoinTeamEvent {
+        constructor (team) {
+            this.team = team;
+        }
+    }
+
+    function createGame() {
+        var createButton = document.getElementById("createGameBtn");
+        createButton.disabled = true;
+        fetch("/createGame", {
+            method: "POST",
+            body: JSON.parse("{}"),
+            mode: "cors",
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw "An error occurred, can't create game.";
+            }
+        }).then((data) => {
+            createButton.disabled = false;
+            document.getElementById("showCreatedGameIdLabel").innerHTML = "Created game ID: " + data.game.game_id;
+            document.getElementById("gameId").value = data.game.game_id;
+            this.game = new Game(data.game.game_id, data.game.red_team, data.game.blue_team, data.game.all_players, data.game.is_started, data.game.scores);
+        }).catch((e) => {
+            alert(e);
+        })
+        return false;
+    }
+
+    function joinGame() {
+        validateJoin();
+        var username = document.getElementById("username").value;
+        var gameId = document.getElementById("gameId").value;
+
+        this.username = username;
+
+        conn = new WebSocket("ws://" + document.location.host + "/ws?username=" + username + "&game_id=" + gameId);
+        conn.onopen = function (evt) {
+            hideLogin();
+            showGame()
+        }
+
+        conn.onclose = function (evt) {
+            hideGame();
+            showLogin();
+        }
+
+        conn.onmessage = function(evt) {
+            const eventData = JSON.parse(evt.data);
+            const event = Object.assign(new Event, eventData);
+            routeEvent(event);
+        }
+    }
+
+    function hideLogin() {
+        document.getElementById("loginRow").style.display = "none";
+    }
+
+    function showLogin() {
+        document.getElementById("loginRow").style.display = "block";
+    }
+
+    function showGame() {
+        document.getElementById("gameRow").style.display = "block";
+    }
+
+    function hideGame() {
+        document.getElementById("gameRow").style.display = "none";
+    }
+
+    function validateJoin() {
+        const supportsWebsockets = 'WebSocket' in window || 'MozWebSocket' in window;
+        if (!supportsWebsockets) {
+            alert('Your browser does not support websockets. Please use a modern browser');
+            return;
+        }
+
+        var username = document.getElementById("username").value;
+        var gameId = document.getElementById("gameId").value;
+
+        if (username === "" || gameId === "") {
+            alert("Please enter a username and a game ID.");
+            return;
+        }
+    }
+
+    function routeEvent(event) {
+        if (event.type === undefined) {
+            alert("Event type is undefined");
+            return;
+        }
+
+        switch (event.type) {
+            case "team_update":
+                var payload = event.payload;
+                this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores);
+                refreshTeams();
+                break;
+            default:
+                alert("Unknown event type: " + event.type);
+                break;
+        }
+    }
+
+    function refreshTeams() {
+        document.getElementById("redTeamList").innerHTML = "";
+        document.getElementById("blueTeamList").innerHTML = "";
+        for (var i = 0; i < this.game.redTeamPlayers.length; i++) {
+            var li = document.createElement("li");
+            li.className = "list-group-item";
+            var player = this.game.redTeamPlayers[i];
+            var readyText = player.ready ? "READY" : "NOT READY";
+            var text = player.username + " - " + readyText;
+            li.appendChild(document.createTextNode(text));
+            document.getElementById("redTeamList").appendChild(li);
+        }
+        for (var i = 0; i < this.game.blueTeamPlayers.length; i++) {
+            var li = document.createElement("li");
+            li.className = "list-group-item";
+            var player = this.game.blueTeamPlayers[i];
+            var readyText = player.ready ? "READY" : "NOT READY";
+            var text = player.username + " - " + readyText;
+            li.appendChild(document.createTextNode(text));
+            document.getElementById("blueTeamList").appendChild(li);
+        }
+    }
+
+
+    function joinTeam(team) {
+        const joinTeamEvent = new JoinTeamEvent(team);
+        sendEvent("select_team", joinTeamEvent);
+    }
+
+    function sendEvent(eventType, payload) {
+        const event = new Event(eventType, payload);
+        conn.send(JSON.stringify(event));
+
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

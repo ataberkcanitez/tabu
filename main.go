@@ -12,5 +12,5 @@ func main() {
 	http.HandleFunc("/createGame", manager.CreateGame)
 	http.HandleFunc("/ws", manager.serveWS)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
