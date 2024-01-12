@@ -39,7 +39,7 @@
             <div class="card" id="redTeamCard">
                 <div class="card-body">
                     <h5 class="card-title">Red Team</h5>
-                    <button type="button" class="btn btn-outline-danger" onclick="joinTeam('red');">Join</button>
+                    <button id="joinRedTeamBtn" type="button" class="btn btn-outline-danger" onclick="joinTeam('red');">Join</button>
                 </div>
                 <ul class="list-group list-group-flush" id="redTeamList">
                 </ul>
@@ -50,7 +50,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Red Team</h5>
 
-                    <button type="button" class="btn btn-outline-primary" onclick="joinTeam('blue')">Join</button>
+                    <button id="joinBlueTeamBtn" type="button" class="btn btn-outline-primary" onclick="joinTeam('blue')">Join</button>
                 </div>
                 <ul class="list-group list-group-flush" id="blueTeamList">
                 </ul>
@@ -202,29 +202,56 @@
         document.getElementById("redTeamList").innerHTML = "";
         document.getElementById("blueTeamList").innerHTML = "";
         for (var i = 0; i < this.game.redTeamPlayers.length; i++) {
-            var li = document.createElement("li");
-            li.className = "list-group-item";
-            var player = this.game.redTeamPlayers[i];
-            var readyText = player.ready ? "READY" : "NOT READY";
-            var text = player.username + " - " + readyText;
-            li.appendChild(document.createTextNode(text));
-            document.getElementById("redTeamList").appendChild(li);
+            preparePlayerItemForTeam(this.game.redTeamPlayers[i], "redTeamList")
         }
         for (var i = 0; i < this.game.blueTeamPlayers.length; i++) {
-            var li = document.createElement("li");
-            li.className = "list-group-item";
-            var player = this.game.blueTeamPlayers[i];
-            var readyText = player.ready ? "READY" : "NOT READY";
-            var text = player.username + " - " + readyText;
-            li.appendChild(document.createTextNode(text));
-            document.getElementById("blueTeamList").appendChild(li);
+            preparePlayerItemForTeam(this.game.blueTeamPlayers[i], "blueTeamList")
+
         }
     }
 
+    function preparePlayerItemForTeam(player, listKey) {
+        var li = document.createElement("li");
+        li.className = "list-group-item";
+        var readyText = player.ready ? "READY" : "NOT READY";
+        var text = player.username + " - " + readyText;
+
+        li.appendChild(document.createTextNode(text));
+
+        if (!player.ready && player.username === this.username) {
+            var button = document.createElement("button");
+            button.className = "btn btn-outline-secondary";
+            button.textContent = "I am ready!";
+            button.addEventListener("click", function() {
+                readyEvent();
+            });
+
+            var buttonContainer = document.createElement("div");
+            buttonContainer.appendChild(button);
+            buttonContainer.className = "float-right";
+            li.appendChild(buttonContainer);
+        }
+
+        document.getElementById(listKey).appendChild(li);
+    }
+
+    function readyEvent() {
+        sendEvent("ready", {});
+        document.getElementById("joinBlueTeamBtn").disabled = true;
+        document.getElementById("joinRedTeamBtn").disabled = true;
+    }
 
     function joinTeam(team) {
         const joinTeamEvent = new JoinTeamEvent(team);
         sendEvent("select_team", joinTeamEvent);
+        document.getElementById("joinRedTeamBtn").disabled = false;
+        document.getElementById("joinBlueTeamBtn").disabled = false;
+
+        if (team === "red") {
+            document.getElementById("joinRedTeamBtn").disabled = true;
+        } else if (team === "blue") {
+            document.getElementById("joinBlueTeamBtn").disabled = true;
+        }
     }
 
     function sendEvent(eventType, payload) {
