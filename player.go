@@ -19,7 +19,10 @@ type Player struct {
 	Username   string
 	Team       string
 	egress     chan Event
+	ready      bool
 }
+
+type PlayerList map[*Player]bool
 
 func NewPlayer(conn *websocket.Conn, manager *Manager, gameId int, username string) *Player {
 	return &Player{
@@ -29,6 +32,7 @@ func NewPlayer(conn *websocket.Conn, manager *Manager, gameId int, username stri
 		gameId:     gameId,
 		Username:   username,
 		Team:       "not_selected",
+		ready:      false,
 	}
 }
 
@@ -101,4 +105,16 @@ func (p *Player) WriteEvents() {
 
 func (p *Player) pongHandler(string) error {
 	return p.connection.SetReadDeadline(time.Now().Add(pongWait))
+}
+
+func (pl PlayerList) MarshalJSON() ([]byte, error) {
+	type PlayerDetails struct {
+		Username string `json:"username"`
+		Ready    bool   `json:"ready"`
+	}
+	var players []PlayerDetails
+	for player := range pl {
+		players = append(players, PlayerDetails{Username: player.Username, Ready: player.ready})
+	}
+	return json.Marshal(players)
 }

@@ -1,20 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"math/rand"
 	"time"
 )
-
-type PlayerList map[*Player]bool
-
-func (pl PlayerList) MarshalJSON() ([]byte, error) {
-	var players []string
-	for player := range pl {
-		players = append(players, player.Username)
-	}
-	return json.Marshal(players)
-}
 
 type Game struct {
 	GameId     int        `json:"game_id"`
