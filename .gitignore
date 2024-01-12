@@ -1,1 +1,4 @@
 .idea
+
+server.crt
+server.key

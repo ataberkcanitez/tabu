@@ -130,7 +130,7 @@
 
         this.username = username;
 
-        conn = new WebSocket("ws://" + document.location.host + "/ws?username=" + username + "&game_id=" + gameId);
+        conn = new WebSocket("wss://" + document.location.host + "/ws?username=" + username + "&game_id=" + gameId);
         conn.onopen = function (evt) {
             hideLogin();
             showGame()
