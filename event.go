@@ -18,6 +18,7 @@ const (
 	EventRoundEnd        = "round_end"
 	EventCorrect         = "correct"
 	EventIncorrect       = "incorrect"
+	EventScoreUpdate     = "score_update"
 )
 
 type SelectTeamEvent struct {
@@ -28,12 +29,4 @@ type GameStartEvent struct {
 }
 
 type RoundEndEvent struct {
-}
-
-type CorrectGuessEvent struct {
-	Team string `json:"team"`
-}
-
-type IncorrectGuessEvent struct {
-	Team string `json:"team"`
 }

@@ -37,6 +37,8 @@ func (m *Manager) setupEventHandlers() {
 	m.handlers[EventSelectTeam] = SelectTeam
 	m.handlers[EventReady] = Ready
 	m.handlers[EventGameStart] = GameStart
+	m.handlers[EventCorrect] = CorrectGuess
+	m.handlers[EventIncorrect] = IncorrectGuess
 }
 
 func (m *Manager) CreateGame(w http.ResponseWriter, r *http.Request) {
@@ -167,6 +169,10 @@ func SelectTeam(event Event, player *Player) error {
 }
 
 func Ready(_ Event, p *Player) error {
+	if p.Team == "" || p.Team == "not_selected" {
+		sendEventToSinglePlayer("ReadyUpdateError", []byte(`{"error": "player has not selected a team"}`), p)
+		return fmt.Errorf("player has not selected a team")
+	}
 	p.ready = true
 	game := p.manager.Games[p.gameId]
 	data, err := json.Marshal(game)
@@ -181,7 +187,7 @@ func Ready(_ Event, p *Player) error {
 
 func GameStart(_ Event, p *Player) error {
 	game := p.manager.Games[p.gameId]
-	isGameStarted := game.Start()
+	isGameStarted := game.CanGameStart()
 
 	data, err := prepareGameStartedResponse(isGameStarted)
 	if err != nil {
@@ -190,7 +196,58 @@ func GameStart(_ Event, p *Player) error {
 	}
 
 	sendEvent(EventGameStartUpdate, data, game.AllPlayers)
+	go game.Start()
 	return nil
+}
+
+func CorrectGuess(_ Event, p *Player) error {
+	game := p.manager.Games[p.gameId]
+	err := game.IncreaseScore(p.Team)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	data, err := prepareScoreUpdateResponse(game)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	sendEvent(EventScoreUpdate, data, game.AllPlayers)
+	return nil
+}
+
+func IncorrectGuess(_ Event, p *Player) error {
+	game := p.manager.Games[p.gameId]
+	err := game.DecreaseScore(p.Team)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	data, err := prepareScoreUpdateResponse(game)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	sendEvent(EventScoreUpdate, data, game.AllPlayers)
+	return nil
+}
+
+func prepareScoreUpdateResponse(game *Game) (json.RawMessage, error) {
+	type ScoreUpdate struct {
+		GameId int            `json:"game_id"`
+		Scores map[string]int `json:"scores"`
+	}
+
+	resp := &ScoreUpdate{
+		GameId: game.GameId,
+		Scores: game.Scores,
+	}
+
+	return json.Marshal(resp)
 }
 
 func prepareGameStartedResponse(started bool) (json.RawMessage, error) {
@@ -219,4 +276,12 @@ func sendEvent(eventType string, payload json.RawMessage, players PlayerList) {
 	for p := range players {
 		p.egress <- outgoingEvent
 	}
+}
+
+func sendEventToSinglePlayer(eventType string, payload json.RawMessage, player *Player) {
+	outgoingEvent := Event{
+		Type:    eventType,
+		Payload: payload,
+	}
+	player.egress <- outgoingEvent
 }
