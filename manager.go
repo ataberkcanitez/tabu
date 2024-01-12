@@ -115,6 +115,24 @@ func (m *Manager) routeEvent(event Event, c *Client) interface{} {
 	return fmt.Errorf("there is no such event type")
 }
 
+func (m *Manager) removeClient(c *Client) {
+	m.Lock()
+	defer m.Unlock()
+	for _, game := range m.Games {
+		if _, ok := game.RedTeam[c]; ok {
+			delete(game.RedTeam, c)
+		}
+		if _, ok := game.BlueTeam[c]; ok {
+			delete(game.BlueTeam, c)
+		}
+
+		if _, ok := game.AllPlayers[c]; ok {
+			delete(game.AllPlayers, c)
+		}
+	}
+
+}
+
 func checkOrigin(_ *http.Request) bool {
 	return true
 }

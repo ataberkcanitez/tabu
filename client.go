@@ -18,9 +18,7 @@ type Client struct {
 	gameId     int
 	Username   string
 	Team       string
-
-	// egress is used to avoid concurrent writes on the websocket connection
-	egress chan Event
+	egress     chan Event
 }
 
 func NewClient(conn *websocket.Conn, manager *Manager, gameId int, username string) *Client {
@@ -36,7 +34,7 @@ func NewClient(conn *websocket.Conn, manager *Manager, gameId int, username stri
 
 func (c *Client) ReadEvents() {
 	defer func() {
-		//c.manager.removeClient(c)
+		c.manager.removeClient(c)
 	}()
 
 	if err := c.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
@@ -70,7 +68,7 @@ func (c *Client) ReadEvents() {
 
 func (c *Client) WriteEvents() {
 	defer func() {
-		//c.manager.removeClient(c)
+		c.manager.removeClient(c)
 	}()
 
 	ticker := time.NewTicker(pingInterval)
