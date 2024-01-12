@@ -6,21 +6,21 @@ import (
 	"time"
 )
 
-type ClientList map[*Client]bool
+type PlayerList map[*Player]bool
 
-func (cl ClientList) MarshalJSON() ([]byte, error) {
-	var clients []string
-	for client := range cl {
-		clients = append(clients, client.Username)
+func (pl PlayerList) MarshalJSON() ([]byte, error) {
+	var players []string
+	for player := range pl {
+		players = append(players, player.Username)
 	}
-	return json.Marshal(clients)
+	return json.Marshal(players)
 }
 
 type Game struct {
 	GameId     int        `json:"game_id"`
-	RedTeam    ClientList `json:"red_team"`
-	BlueTeam   ClientList `json:"blue_team"`
-	AllPlayers ClientList `json:"all_players"`
+	RedTeam    PlayerList `json:"red_team"`
+	BlueTeam   PlayerList `json:"blue_team"`
+	AllPlayers PlayerList `json:"all_players"`
 	IsStarted  bool       `json:"is_started"`
 }
 
@@ -31,14 +31,14 @@ func NewGame() *Game {
 	gameId := rng.Intn(999) + 10000
 	return &Game{
 		GameId:     gameId,
-		RedTeam:    make(ClientList),
-		BlueTeam:   make(ClientList),
-		AllPlayers: make(ClientList),
+		RedTeam:    make(PlayerList),
+		BlueTeam:   make(PlayerList),
+		AllPlayers: make(PlayerList),
 		IsStarted:  false,
 	}
 }
 
-func (g *Game) SwitchTeam(player *Client, selectedTeam string) (*Game, error) {
+func (g *Game) SwitchTeam(player *Player, selectedTeam string) (*Game, error) {
 	delete(g.RedTeam, player)
 	delete(g.BlueTeam, player)
 	if selectedTeam == "red" {

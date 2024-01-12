@@ -90,24 +90,24 @@ func (m *Manager) serveWS(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	client := NewClient(conn, m, gameIdInt, username)
-	m.addClient(gameIdInt, client)
+	player := NewPlayer(conn, m, gameIdInt, username)
+	m.addPlayer(gameIdInt, player)
 
-	go client.ReadEvents()
-	go client.WriteEvents()
+	go player.ReadEvents()
+	go player.WriteEvents()
 
 }
 
-func (m *Manager) addClient(gameId int, client *Client) {
+func (m *Manager) addPlayer(gameId int, player *Player) {
 	m.Lock()
 	defer m.Unlock()
 	game := m.Games[gameId]
-	game.AllPlayers[client] = true
+	game.AllPlayers[player] = true
 }
 
-func (m *Manager) routeEvent(event Event, c *Client) interface{} {
+func (m *Manager) routeEvent(event Event, p *Player) interface{} {
 	if handler, ok := m.handlers[event.Type]; ok {
-		if err := handler(event, c); err != nil {
+		if err := handler(event, p); err != nil {
 			return err
 		}
 		return nil
@@ -115,19 +115,19 @@ func (m *Manager) routeEvent(event Event, c *Client) interface{} {
 	return fmt.Errorf("there is no such event type")
 }
 
-func (m *Manager) removeClient(c *Client) {
+func (m *Manager) removePlayer(player *Player) {
 	m.Lock()
 	defer m.Unlock()
 	for _, game := range m.Games {
-		if _, ok := game.RedTeam[c]; ok {
-			delete(game.RedTeam, c)
+		if _, ok := game.RedTeam[player]; ok {
+			delete(game.RedTeam, player)
 		}
-		if _, ok := game.BlueTeam[c]; ok {
-			delete(game.BlueTeam, c)
+		if _, ok := game.BlueTeam[player]; ok {
+			delete(game.BlueTeam, player)
 		}
 
-		if _, ok := game.AllPlayers[c]; ok {
-			delete(game.AllPlayers, c)
+		if _, ok := game.AllPlayers[player]; ok {
+			delete(game.AllPlayers, player)
 		}
 	}
 
@@ -139,7 +139,7 @@ func checkOrigin(_ *http.Request) bool {
 
 //--- Events
 
-func SelectTeam(event Event, client *Client) error {
+func SelectTeam(event Event, player *Player) error {
 	var selectTeamEvent SelectTeamEvent
 	if err := json.Unmarshal(event.Payload, &selectTeamEvent); err != nil {
 		return err
@@ -149,10 +149,10 @@ func SelectTeam(event Event, client *Client) error {
 	if team == "" || team != "red" && team != "blue" {
 		return fmt.Errorf("invalid team")
 	}
-	client.Team = team
-	gameId := client.gameId
-	game := client.manager.Games[gameId]
-	switchedTeam, err := game.SwitchTeam(client, team)
+	player.Team = team
+	gameId := player.gameId
+	game := player.manager.Games[gameId]
+	switchedTeam, err := game.SwitchTeam(player, team)
 	if err != nil {
 		return err
 	}
@@ -166,8 +166,8 @@ func SelectTeam(event Event, client *Client) error {
 		Payload: data,
 	}
 
-	for client := range game.AllPlayers {
-		client.egress <- outgoingEvent
+	for p := range game.AllPlayers {
+		p.egress <- outgoingEvent
 	}
 
 	return nil

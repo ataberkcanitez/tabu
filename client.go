@@ -12,7 +12,7 @@ var (
 	pingInterval = (pongWait * 9) / 10
 )
 
-type Client struct {
+type Player struct {
 	connection *websocket.Conn
 	manager    *Manager
 	gameId     int
@@ -21,8 +21,8 @@ type Client struct {
 	egress     chan Event
 }
 
-func NewClient(conn *websocket.Conn, manager *Manager, gameId int, username string) *Client {
-	return &Client{
+func NewPlayer(conn *websocket.Conn, manager *Manager, gameId int, username string) *Player {
+	return &Player{
 		connection: conn,
 		manager:    manager,
 		egress:     make(chan Event),
@@ -32,21 +32,21 @@ func NewClient(conn *websocket.Conn, manager *Manager, gameId int, username stri
 	}
 }
 
-func (c *Client) ReadEvents() {
+func (p *Player) ReadEvents() {
 	defer func() {
-		c.manager.removeClient(c)
+		p.manager.removePlayer(p)
 	}()
 
-	if err := c.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+	if err := p.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
 		log.Println("failed to set read deadline: ", err)
 		return
 	}
 
-	c.connection.SetReadLimit(512)
-	c.connection.SetPongHandler(c.pongHandler)
+	p.connection.SetReadLimit(512)
+	p.connection.SetPongHandler(p.pongHandler)
 
 	for {
-		_, payload, err := c.connection.ReadMessage()
+		_, payload, err := p.connection.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("err reading message: %v\n", err)
@@ -60,23 +60,23 @@ func (c *Client) ReadEvents() {
 			break
 		}
 
-		if err := c.manager.routeEvent(request, c); err != nil {
+		if err := p.manager.routeEvent(request, p); err != nil {
 			log.Printf("failed to route event: %v\n", err)
 		}
 	}
 }
 
-func (c *Client) WriteEvents() {
+func (p *Player) WriteEvents() {
 	defer func() {
-		c.manager.removeClient(c)
+		p.manager.removePlayer(p)
 	}()
 
 	ticker := time.NewTicker(pingInterval)
 	for {
 		select {
-		case message, ok := <-c.egress:
+		case message, ok := <-p.egress:
 			if !ok {
-				if err := c.connection.WriteMessage(websocket.CloseMessage, nil); err != nil {
+				if err := p.connection.WriteMessage(websocket.CloseMessage, nil); err != nil {
 					log.Println("failed to write close message: ", err)
 				}
 				return
@@ -87,11 +87,11 @@ func (c *Client) WriteEvents() {
 				log.Printf("failed to marshal payload: %v\n", err)
 				return
 			}
-			if err := c.connection.WriteMessage(websocket.TextMessage, data); err != nil {
+			if err := p.connection.WriteMessage(websocket.TextMessage, data); err != nil {
 				log.Println("failed to write message: ", err)
 			}
 		case <-ticker.C:
-			if err := c.connection.WriteMessage(websocket.PingMessage, []byte(``)); err != nil {
+			if err := p.connection.WriteMessage(websocket.PingMessage, []byte(``)); err != nil {
 				log.Println("failed to send ping: ", err)
 				return
 			}
@@ -99,6 +99,6 @@ func (c *Client) WriteEvents() {
 	}
 }
 
-func (c *Client) pongHandler(string) error {
-	return c.connection.SetReadDeadline(time.Now().Add(pongWait))
+func (p *Player) pongHandler(string) error {
+	return p.connection.SetReadDeadline(time.Now().Add(pongWait))
 }

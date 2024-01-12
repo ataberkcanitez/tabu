@@ -7,7 +7,7 @@ type Event struct {
 	Payload json.RawMessage `json:"payload"`
 }
 
-type EventHandler func(event Event, c *Client) error
+type EventHandler func(event Event, p *Player) error
 
 const (
 	EventSelectTeam = "select_team"
