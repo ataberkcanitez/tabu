@@ -84,7 +84,7 @@
             <div class="col-sm-6">
                 <div class="card" id="redTeamCard">
                     <div class="card-body">
-                        <h5 class="card-title" id="redTeamTitle">Red Team</h5>
+                        <h5 class="card-title" id="redTeamTitle">Red Team: 0</h5>
                         <button id="joinRedTeamBtn" type="button" class="btn btn-outline-danger"
                                 onclick="joinTeam('red');">
                             Join
@@ -97,7 +97,7 @@
             <div class="col-sm-6">
                 <div class="card" id="blueTeamCard">
                     <div class="card-body">
-                        <h5 class="card-title" id="blueTeamTitle">Blue Team</h5>
+                        <h5 class="card-title" id="blueTeamTitle">Blue Team: 0</h5>
 
                         <button id="joinBlueTeamBtn" type="button" class="btn btn-outline-primary"
                                 onclick="joinTeam('blue')">Join
@@ -242,7 +242,6 @@
         var payload = event.payload;
         switch (event.type) {
             case "team_update":
-                console.log("payload event " + JSON.stringify(payload));
                 this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores, payload.narrator, payload.round);
                 refreshTeams();
                 break;
@@ -252,9 +251,8 @@
                 break;
 
             case "game_start_update":
-                console.log(event.payload);
+                this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores, payload.narrator, payload.round);
                 prepareGameStartLayouts();
-
                 break;
 
             case "round":
@@ -263,6 +261,7 @@
                 break;
 
             case "score_update":
+                this.game.scores = payload.scores;
                 updateScoreLayout(event.payload);
                 break;
 
@@ -276,13 +275,10 @@
         console.log("update score event " + payload);
         let redTeamScore = payload.scores.red;
         let blueTeamScore = payload.scores.blue;
-        document.getElementById("redTeamTitle").innerHTML = "Red Team - " + redTeamScore;
-        document.getElementById("blueTeamTitle").innerHTML = "Blue Team - " + blueTeamScore;
+        document.getElementById("redTeamTitle").innerHTML = "Red Team: " + redTeamScore;
+        document.getElementById("blueTeamTitle").innerHTML = "Blue Team:  " + blueTeamScore;
 
-        this.game.round = payload.taboo;
         prepareNewRoundLayouts(payload.taboo);
-
-
     }
 
     function prepareGameStartLayouts() {
@@ -365,10 +361,10 @@
     }
 
     function prepareNewRoundLayouts(taboo) {
-        shouldUserSeeTabooCard();
-        if (username === this.game.narrator) {
-
-        } // todo: check if the user is narrator or not
+        if (!shouldUserSeeTabooCard()) {
+            prepareGuesserLayout();
+            return;
+        }
 
         document.getElementById("taboo-word").innerHTML = taboo.word;
 
@@ -386,12 +382,24 @@
     }
 
     function shouldUserSeeTabooCard() {
-        if (this.game.narrator === this.username) {
+        const userIsNarrator = username === this.game.narrator;
+        const userIsOnBlueTeam = this.game.blueTeamPlayers.some(player => player.username === username);
+        const userIsOnRedTeam = this.game.redTeamPlayers.some(player => player.username === username);
+        const isBlueTeamsRound = this.game.round.blue_team_turn;
+
+        if (userIsNarrator) {
+            return true;
+        } else if (userIsOnBlueTeam && !isBlueTeamsRound) {
+            return true;
+        } else if (userIsOnBlueTeam && isBlueTeamsRound && userIsNarrator) {
+            return true;
+        } else if (userIsOnRedTeam && isBlueTeamsRound) {
+            return true;
+        } else if (userIsOnRedTeam && !isBlueTeamsRound && userIsNarrator) {
+            return true;
+        } else {
             return false;
         }
-        // if (this.game.round.)
-
-        console.log("this game: " + JSON.stringify(this.game));
     }
 
     function correct() {
@@ -405,6 +413,11 @@
     function pass() {
         sendEvent("pass", {});
 
+    }
+
+    function prepareGuesserLayout() {
+        document.getElementById("taboo-word").innerHTML = "You are not allowed to see the card";
+        document.getElementById("taboo-banned-words").innerHTML = "";
     }
 
 </script>
