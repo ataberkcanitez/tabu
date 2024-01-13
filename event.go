@@ -19,7 +19,9 @@ const (
 	EventRoundEnd        = "round_end"
 	EventCorrect         = "correct"
 	EventIncorrect       = "incorrect"
+	EventPass            = "pass"
 	EventScoreUpdate     = "score_update"
+	EventRoundUpdate     = "round"
 )
 
 type SelectTeamEvent struct {

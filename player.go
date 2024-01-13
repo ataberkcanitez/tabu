@@ -20,7 +20,6 @@ type Player struct {
 	Team       string
 	egress     chan Event
 	ready      bool
-	narrator   bool
 }
 
 type PlayerList map[*Player]bool
@@ -34,7 +33,6 @@ func NewPlayer(conn *websocket.Conn, manager *Manager, gameId int, username stri
 		Username:   username,
 		Team:       "not_selected",
 		ready:      false,
-		narrator:   false,
 	}
 }
 

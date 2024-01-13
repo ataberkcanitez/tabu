@@ -12,56 +12,103 @@
 <body>
 <div class="container">
     <h1 class="text-center">Tabu</h1>
-    <h3 id="gameIdTitle"></h3>
-    <button id="startGameBtn" style="display: none; margin-top: 5px; margin-bottom: 5px;" onclick="startGame();" type="button" class="btn btn-primary btn-lg btn-block">Start the Game!</button>
-</div>
-
-<div class="container" id="loginRow">
-    <div class="row">
-        <div class="col-md-12 mb-5" style="background: #F5F5F5;">
-            <h2>Create Game</h2>
-            <button id="createGameBtn" type="button" class="btn btn-primary" onclick="createGame()">Create</button>
-            <p id="showCreatedGameIdLabel">Created game ID:</p>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8"><h3 id="gameIdTitle"></h3>
+            </div>
+            <div class="col-sm-4"><h3 id="narratorTitle"></h3></div>
         </div>
-        <div class="col-md-12" style="background: #F5F5F5">
-            <h2>Join Game</h2>
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" class="form-control" id="username">
+        <button id="startGameBtn" style="display: none; margin-top: 5px; margin-bottom: 5px;" onclick="startGame();"
+                type="button" class="btn btn-primary btn-lg btn-block">Start the Game!
+        </button>
+    </div>
+
+    <div class="container" id="taboo-card-container" style="display: none;">
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="pass();">PASS</button>
             </div>
-            <div class="form-group">
-                <label for="gameId">Game ID:</label>
-                <input type="text" class="form-control" id="gameId">
+            <div class="col-6">
+                <button type="button" class="btn btn-success btn-lg btn-block" onclick="correct();">CORRECT</button>
             </div>
-            <button type="button" class="btn btn-primary" onclick="joinGame()">Join</button>
+            <div class="col">
+                <button type="button" class="btn btn-danger btn-lg btn-block" onclick="incorrect();">INCORRECT!</button>
+            </div>
+        </div>
+        <div class="card text-center m-6" id="taboo-card">
+
+            <div class="card-header bg-danger text-white" id="taboo-word">
+                Taboo Card
+            </div>
+            <div class="card-body">
+                <p class="card-text" id="taboo-banned-words">
+                    NOISE
+                    <br>
+                    BLOW
+                    <br>
+                    LIPS
+                    <br>
+                    SOUND
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="container" id="loginRow">
+        <div class="row">
+            <div class="col-md-12 mb-5" style="background: #F5F5F5;">
+                <h2>Create Game</h2>
+                <button id="createGameBtn" type="button" class="btn btn-primary" onclick="createGame()">Create</button>
+                <p id="showCreatedGameIdLabel">Created game ID:</p>
+            </div>
+            <div class="col-md-12" style="background: #F5F5F5">
+                <h2>Join Game</h2>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" class="form-control" id="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="gameId">Game ID:</label>
+                    <input type="text" class="form-control" id="gameId">
+                </div>
+                <button type="button" class="btn btn-primary" onclick="joinGame()">Join</button>
+            </div>
         </div>
     </div>
-</div>
-<div class="container" id="gameRow" style="display: none;">
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="card" id="redTeamCard">
-                <div class="card-body">
-                    <h5 class="card-title">Red Team</h5>
-                    <button id="joinRedTeamBtn" type="button" class="btn btn-outline-danger" onclick="joinTeam('red');">Join</button>
+    <div class="container" id="gameRow" style="display: none;">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card" id="redTeamCard">
+                    <div class="card-body">
+                        <h5 class="card-title" id="redTeamTitle">Red Team</h5>
+                        <button id="joinRedTeamBtn" type="button" class="btn btn-outline-danger"
+                                onclick="joinTeam('red');">
+                            Join
+                        </button>
+                    </div>
+                    <ul class="list-group list-group-flush" id="redTeamList">
+                    </ul>
                 </div>
-                <ul class="list-group list-group-flush" id="redTeamList">
-                </ul>
             </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="card" id="blueTeamCard">
-                <div class="card-body">
-                    <h5 class="card-title">Red Team</h5>
+            <div class="col-sm-6">
+                <div class="card" id="blueTeamCard">
+                    <div class="card-body">
+                        <h5 class="card-title" id="blueTeamTitle">Blue Team</h5>
 
-                    <button id="joinBlueTeamBtn" type="button" class="btn btn-outline-primary" onclick="joinTeam('blue')">Join</button>
+                        <button id="joinBlueTeamBtn" type="button" class="btn btn-outline-primary"
+                                onclick="joinTeam('blue')">Join
+                        </button>
+                    </div>
+                    <ul class="list-group list-group-flush" id="blueTeamList">
+                    </ul>
                 </div>
-                <ul class="list-group list-group-flush" id="blueTeamList">
-                </ul>
             </div>
         </div>
     </div>
-</div>
 </body>
 
 <script>
@@ -69,13 +116,15 @@
     var username = "";
 
     class Game {
-        constructor (gameId, redTeamPlayers, blueTeamPlayers, allPlayers, isStarted, scores) {
+        constructor(gameId, redTeamPlayers, blueTeamPlayers, allPlayers, isStarted, scores, narrator, round) {
             this.gameId = gameId;
             this.redTeamPlayers = redTeamPlayers || [];
             this.blueTeamPlayers = blueTeamPlayers || [];
             this.allPlayers = allPlayers || [];
-            this.isStarted = isStarted;
-            this.scores = scores;
+            this.isStarted = isStarted || false;
+            this.scores = scores || {};
+            this.narrator = narrator || "";
+            this.round = round || {};
         }
     }
 
@@ -87,7 +136,7 @@
     }
 
     class TeamUpdateEvent {
-        constructor (evt) {
+        constructor(evt) {
             this.allPlayers = evt.all_players;
             this.blueTeamPlayers = evt.blue_team;
             this.redTeamPlayers = evt.red_team;
@@ -98,7 +147,7 @@
     }
 
     class JoinTeamEvent {
-        constructor (team) {
+        constructor(team) {
             this.team = team;
         }
     }
@@ -120,7 +169,7 @@
             createButton.disabled = false;
             document.getElementById("showCreatedGameIdLabel").innerHTML = "Created game ID: " + data.game.game_id;
             document.getElementById("gameId").value = data.game.game_id;
-            this.game = new Game(data.game.game_id, data.game.red_team, data.game.blue_team, data.game.all_players, data.game.is_started, data.game.scores);
+            this.game = new Game(data.game.game_id, data.game.red_team, data.game.blue_team, data.game.all_players, data.game.is_started, data.game.scores, data.game.narrator, data.game.round);
         }).catch((e) => {
             alert(e);
         })
@@ -145,7 +194,7 @@
             showLogin();
         }
 
-        conn.onmessage = function(evt) {
+        conn.onmessage = function (evt) {
             const eventData = JSON.parse(evt.data);
             const event = Object.assign(new Event, eventData);
             routeEvent(event);
@@ -190,10 +239,11 @@
             return;
         }
 
+        var payload = event.payload;
         switch (event.type) {
             case "team_update":
-                var payload = event.payload;
-                this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores);
+                console.log("payload event " + JSON.stringify(payload));
+                this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores, payload.narrator, payload.round);
                 refreshTeams();
                 break;
 
@@ -202,14 +252,46 @@
                 break;
 
             case "game_start_update":
-                alert("Game started!");
                 console.log(event.payload);
+                prepareGameStartLayouts();
+
+                break;
+
+            case "round":
+                this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores, payload.narrator, payload.round);
+                prepareNewRoundLayouts(event.payload.round.taboo);
+                break;
+
+            case "score_update":
+                updateScoreLayout(event.payload);
                 break;
 
             default:
                 alert("Unknown event type: " + event.type);
                 break;
         }
+    }
+
+    function updateScoreLayout(payload) {
+        console.log("update score event " + payload);
+        let redTeamScore = payload.scores.red;
+        let blueTeamScore = payload.scores.blue;
+        document.getElementById("redTeamTitle").innerHTML = "Red Team - " + redTeamScore;
+        document.getElementById("blueTeamTitle").innerHTML = "Blue Team - " + blueTeamScore;
+
+        this.game.round = payload.taboo;
+        prepareNewRoundLayouts(payload.taboo);
+
+
+    }
+
+    function prepareGameStartLayouts() {
+        document.getElementById("taboo-card-container").style.display = "block";
+
+        document.getElementById("joinBlueTeamBtn").style.display = "none";
+        document.getElementById("joinRedTeamBtn").style.display = "none";
+        document.getElementById("startGameBtn").style.display = "none";
+        document.getElementById("narratorTitle").innerHTML = "Narrator: " + this.game.narrator;
     }
 
     function refreshTeams() {
@@ -236,7 +318,7 @@
             var button = document.createElement("button");
             button.className = "btn btn-outline-secondary";
             button.textContent = "I am ready!";
-            button.addEventListener("click", function() {
+            button.addEventListener("click", function () {
                 readyEvent();
             });
 
@@ -280,8 +362,51 @@
 
     function startGame() {
         sendEvent("game_start", {});
+    }
+
+    function prepareNewRoundLayouts(taboo) {
+        shouldUserSeeTabooCard();
+        if (username === this.game.narrator) {
+
+        } // todo: check if the user is narrator or not
+
+        document.getElementById("taboo-word").innerHTML = taboo.word;
+
+        var bannedWordsContent = "";
+        const bannedWords = taboo.banned_words;
+        for (let i = 0; i < bannedWords.length; i++) {
+            bannedWordsContent += bannedWords[i];
+            if (i < bannedWords.length - 1) {
+                bannedWordsContent += "<br>";
+            }
+        }
+
+        document.getElementById("taboo-banned-words").innerHTML = bannedWordsContent;
+        document.getElementById("narratorTitle").innerHTML = "Narrator: " + this.game.narrator;
+    }
+
+    function shouldUserSeeTabooCard() {
+        if (this.game.narrator === this.username) {
+            return false;
+        }
+        // if (this.game.round.)
+
+        console.log("this game: " + JSON.stringify(this.game));
+    }
+
+    function correct() {
+        sendEvent("correct", {});
+    }
+
+    function incorrect() {
+        sendEvent("incorrect", {});
+    }
+
+    function pass() {
+        sendEvent("pass", {});
 
     }
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

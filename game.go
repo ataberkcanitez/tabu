@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"time"
@@ -13,6 +14,15 @@ type Game struct {
 	AllPlayers PlayerList     `json:"all_players"`
 	IsStarted  bool           `json:"is_started"`
 	Scores     map[string]int `json:"scores"`
+	Narrator   string         `json:"narrator"`
+	Round      *Round         `json:"round"`
+}
+
+type Round struct {
+	Taboo        Taboo  `json:"taboo"`
+	RedTeamTurn  bool   `json:"red_team_turn"`
+	BlueTeamTurn bool   `json:"blue_team_turn"`
+	Narrator     string `json:"narrator"`
 }
 
 func NewGame() *Game {
@@ -30,6 +40,7 @@ func NewGame() *Game {
 		AllPlayers: make(PlayerList),
 		IsStarted:  false,
 		Scores:     scoresMap,
+		Round:      nil,
 	}
 }
 
@@ -69,33 +80,102 @@ func (g *Game) Start() {
 		g.endGame()
 	}()
 
-	g.IsStarted = true
-	for {
+	roundIdx := 0
+	taboos := TaboosFromJson()
 
-	}
+	g.startRoundForRedTeam(taboos, roundIdx)
+	roundIdx++
 }
+
+/**
+{"type":"round","payload":{"taboo":{"word":"gökdelen","banned_words":["yüksek bina","şehir manzarası","ofis","kat"]},"red_team_turn":true,"blue_team_turn":false,"narrator":"ataberk"}}
+*/
 
 func (g *Game) endGame() {
 	for player := range g.AllPlayers {
 		player.ready = false
 		player.Team = "not_selected"
-		player.narrator = false
 	}
 	g.IsStarted = false
 }
 
-func (g *Game) IncreaseScore(team string) error {
-	if !g.IsStarted {
-		return fmt.Errorf("game is not started")
+func (g *Game) IncreaseScore() error {
+	team := ""
+	if g.Round.RedTeamTurn {
+		team = "red"
+	} else {
+		team = "blue"
 	}
 	g.Scores[team] += 1
+	taboo := g.selectRandomTaboo(TaboosFromJson())
+	g.Round.Taboo = taboo
+
 	return nil
 }
 
-func (g *Game) DecreaseScore(team string) error {
-	if !g.IsStarted {
-		return fmt.Errorf("game is not started")
+func (g *Game) DecreaseScore() error {
+	team := ""
+	if g.Round.RedTeamTurn {
+		team = "red"
+	} else {
+		team = "blue"
 	}
+
 	g.Scores[team] -= 1
+
+	taboo := g.selectRandomTaboo(TaboosFromJson())
+	g.Round.Taboo = taboo
 	return nil
+}
+
+func (g *Game) Pass() error {
+	taboo := g.selectRandomTaboo(TaboosFromJson())
+	g.Round.Taboo = taboo
+	return nil
+}
+
+func (g *Game) startRoundForRedTeam(taboos []Taboo, roundIdx int) {
+	currentTaboo := g.selectRandomTaboo(taboos)
+	redTeamIdx := roundIdx / 2
+	idx := 0
+	round := &Round{
+		Taboo:        currentTaboo,
+		RedTeamTurn:  true,
+		BlueTeamTurn: false,
+		Narrator:     "",
+	}
+	g.Round = round
+	for player, _ := range g.RedTeam {
+		if idx == redTeamIdx {
+			g.Narrator = player.Username
+			round.Narrator = player.Username
+		}
+		idx++
+	}
+
+	g.NotifyPlayersForRoundEvent()
+}
+
+func (g *Game) startRoundForBlueTeam(taboos []Taboo, roundIdx int) {
+
+}
+
+func (g *Game) NotifyPlayersForRoundEvent() {
+	data, err := json.Marshal(g)
+	if err != nil {
+		fmt.Printf("failed to marshal payload: %v\n", err)
+		return
+	}
+	for player, _ := range g.AllPlayers {
+		player.egress <- Event{
+			Type:    EventRoundUpdate,
+			Payload: data,
+		}
+	}
+}
+
+func (g *Game) selectRandomTaboo(taboos []Taboo) Taboo {
+	s := rand.NewSource(time.Now().Unix())
+	r := rand.New(s)
+	return taboos[r.Intn(len(taboos))]
 }

@@ -39,6 +39,7 @@ func (m *Manager) setupEventHandlers() {
 	m.handlers[EventGameStart] = GameStart
 	m.handlers[EventCorrect] = CorrectGuess
 	m.handlers[EventIncorrect] = IncorrectGuess
+	m.handlers[EventPass] = PassTheCard
 }
 
 func (m *Manager) CreateGame(w http.ResponseWriter, r *http.Request) {
@@ -226,7 +227,7 @@ func GameStart(_ Event, p *Player) error {
 
 func CorrectGuess(_ Event, p *Player) error {
 	game := p.manager.Games[p.gameId]
-	err := game.IncreaseScore(p.Team)
+	err := game.IncreaseScore()
 	if err != nil {
 		log.Println(err)
 		return err
@@ -244,7 +245,25 @@ func CorrectGuess(_ Event, p *Player) error {
 
 func IncorrectGuess(_ Event, p *Player) error {
 	game := p.manager.Games[p.gameId]
-	err := game.DecreaseScore(p.Team)
+	err := game.DecreaseScore()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	data, err := prepareScoreUpdateResponse(game)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	sendEvent(EventScoreUpdate, data, game.AllPlayers)
+	return nil
+}
+
+func PassTheCard(event Event, p *Player) error {
+	game := p.manager.Games[p.gameId]
+	err := game.Pass()
 	if err != nil {
 		log.Println(err)
 		return err
@@ -262,13 +281,13 @@ func IncorrectGuess(_ Event, p *Player) error {
 
 func prepareScoreUpdateResponse(game *Game) (json.RawMessage, error) {
 	type ScoreUpdate struct {
-		GameId int            `json:"game_id"`
 		Scores map[string]int `json:"scores"`
+		Taboo  Taboo          `json:"taboo"`
 	}
 
 	resp := &ScoreUpdate{
-		GameId: game.GameId,
 		Scores: game.Scores,
+		Taboo:  game.Round.Taboo,
 	}
 
 	return json.Marshal(resp)

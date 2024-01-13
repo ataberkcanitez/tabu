@@ -1,0 +1,82 @@
+[
+  {
+    "word": "gözlük",
+    "banned_words": ["göz", "cam", "göz aksesuarı", "lens"]
+  },
+  {
+    "word": "bisiklet",
+    "banned_words": ["tekerlekli araç", "pedal", "zil", "bisiklet yolu"]
+  },
+  {
+    "word": "kitap",
+    "banned_words": ["yazılı eser", "sayfa", "kapağı olan", "yazar"]
+  },
+  {
+    "word": "plaj",
+    "banned_words": ["kum", "güneş", "deniz", "şemsiye"]
+  },
+  {
+    "word": "piano",
+    "banned_words": ["müzik aleti", "tuşlu", "notalar", "klavye"]
+  },
+  {
+    "word": "balık",
+    "banned_words": ["suda yaşayan", "yüzgeçli", "lezzetli", "akvaryum"]
+  },
+  {
+    "word": "gökyüzü",
+    "banned_words": ["mavi", "bulutlar", "güneş", "uzay"]
+  },
+  {
+    "word": "bisiklet",
+    "banned_words": ["tekerlekli araç", "pedal", "zil", "bisiklet yolu"]
+  },
+  {
+    "word": "kamera",
+    "banned_words": ["fotoğraf çeken", "objektif", "poz verme", "video kaydı"]
+  },
+  {
+    "word": "kahve",
+    "banned_words": ["siyah içecek", "kahve çekirdeği", "enerji", "fincan"]
+  },
+  {
+    "word": "gitar",
+    "banned_words": ["müzik aleti", "tel telli", "akustik", "akor"]
+  },
+  {
+    "word": "şemsiye",
+    "banned_words": ["yağmur", "güneş", "katlanabilir", "koruma"]
+  },
+  {
+    "word": "gözlük",
+    "banned_words": ["göz", "cam", "göz aksesuarı", "lens"]
+  },
+  {
+    "word": "deniz",
+    "banned_words": ["okyanus", "kum", "dalga", "gemiler"]
+  },
+  {
+    "word": "kalem",
+    "banned_words": ["yazma aracı", "mürekkep", "kâğıt", "dolma kalem"]
+  },
+  {
+    "word": "gazete",
+    "banned_words": ["haber", "yazılı basın", "matbu", "okuma"]
+  },
+  {
+    "word": "ayakkabı",
+    "banned_words": ["ayak giyimi", "taban", "topuklu", "spor"]
+  },
+  {
+    "word": "gökdelen",
+    "banned_words": ["yüksek bina", "şehir manzarası", "ofis", "kat"]
+  },
+  {
+    "word": "kuş",
+    "banned_words": ["uçan hayvan", "tüy", "kanat", "kuş kafesi"]
+  },
+  {
+    "word": "tiyatro",
+    "banned_words": ["sahne sanatları", "oyun", "perde", "aktör"]
+  }
+]
