@@ -61,7 +61,6 @@ func (g *Game) CanGameStart() bool {
 			break
 		}
 	}
-	g.IsStarted = okToStart
 	return okToStart
 }
 
@@ -70,6 +69,7 @@ func (g *Game) Start() {
 		g.endGame()
 	}()
 
+	g.IsStarted = true
 	for {
 
 	}

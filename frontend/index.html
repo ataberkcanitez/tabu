@@ -8,10 +8,11 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <title>Tabu</title>
-    <h3 id="gameIdTitle"></h3>
 </head>
 <body>
 <h1 class="text-center">Tabu</h1>
+<h3 id="gameIdTitle"></h3>
+<button id="startGameBtn" style="display: none; margin: 5px;" onclick="startGame();" type="button" class="btn btn-primary btn-lg btn-block">Start the Game!</button>
 
 <div class="container" id="loginRow">
     <div class="row">
@@ -195,8 +196,14 @@
                 break;
 
             case "game_can_start":
-                alert("Game can start!");
+                showStartGameButton();
                 break;
+
+            case "game_start_update":
+                alert("Game started!");
+                console.log(event.payload);
+                break;
+
             default:
                 alert("Unknown event type: " + event.type);
                 break;
@@ -262,6 +269,15 @@
     function sendEvent(eventType, payload) {
         const event = new Event(eventType, payload);
         conn.send(JSON.stringify(event));
+
+    }
+
+    function showStartGameButton() {
+        document.getElementById("startGameBtn").style.display = "block";
+    }
+
+    function startGame() {
+        sendEvent("game_start", {});
 
     }
 </script>

@@ -26,8 +26,5 @@ type SelectTeamEvent struct {
 	Team string `json:"team"`
 }
 
-type GameStartEvent struct {
-}
-
 type RoundEndEvent struct {
 }

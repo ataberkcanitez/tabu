@@ -208,15 +208,18 @@ func Ready(_ Event, p *Player) error {
 
 func GameStart(_ Event, p *Player) error {
 	game := p.manager.Games[p.gameId]
-	isGameStarted := game.CanGameStart()
-
-	data, err := prepareGameStartedResponse(isGameStarted)
-	if err != nil {
-		log.Println(err)
-		return err
+	canGameStart := game.CanGameStart()
+	if !canGameStart {
+		return fmt.Errorf("not all players are ready")
 	}
 
+	game.IsStarted = true
 	go game.Start()
+
+	data, err := json.Marshal(game)
+	if err != nil {
+		return fmt.Errorf("failed to marshal payload: %v", err)
+	}
 	sendEvent(EventGameStartUpdate, data, game.AllPlayers)
 	return nil
 }
@@ -266,24 +269,6 @@ func prepareScoreUpdateResponse(game *Game) (json.RawMessage, error) {
 	resp := &ScoreUpdate{
 		GameId: game.GameId,
 		Scores: game.Scores,
-	}
-
-	return json.Marshal(resp)
-}
-
-func prepareGameStartedResponse(started bool) (json.RawMessage, error) {
-	type GameStartResponse struct {
-		IsGameStarted bool   `json:"is_game_started"`
-		error         string `json:"error"`
-	}
-
-	resp := &GameStartResponse{}
-	if !started {
-		resp.IsGameStarted = false
-		resp.error = "Not all players are ready"
-	} else {
-		resp.IsGameStarted = true
-		resp.error = ""
 	}
 
 	return json.Marshal(resp)
