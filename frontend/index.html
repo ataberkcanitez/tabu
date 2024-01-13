@@ -8,6 +8,7 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <title>Tabu</title>
+    <h3 id="gameIdTitle"></h3>
 </head>
 <body>
 <h1 class="text-center">Tabu</h1>
@@ -127,13 +128,13 @@
         validateJoin();
         var username = document.getElementById("username").value;
         var gameId = document.getElementById("gameId").value;
-
         this.username = username;
 
         conn = new WebSocket("wss://" + document.location.host + "/ws?username=" + username + "&game_id=" + gameId);
         conn.onopen = function (evt) {
             hideLogin();
             showGame()
+            document.getElementById("gameIdTitle").innerHTML = "Game ID: " + gameId;
         }
 
         conn.onclose = function (evt) {
@@ -201,10 +202,10 @@
     function refreshTeams() {
         document.getElementById("redTeamList").innerHTML = "";
         document.getElementById("blueTeamList").innerHTML = "";
-        for (var i = 0; i < this.game.redTeamPlayers.length; i++) {
+        for (let i = 0; i < this.game.redTeamPlayers.length; i++) {
             preparePlayerItemForTeam(this.game.redTeamPlayers[i], "redTeamList")
         }
-        for (var i = 0; i < this.game.blueTeamPlayers.length; i++) {
+        for (let i = 0; i < this.game.blueTeamPlayers.length; i++) {
             preparePlayerItemForTeam(this.game.blueTeamPlayers[i], "blueTeamList")
 
         }
