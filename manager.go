@@ -96,9 +96,17 @@ func (m *Manager) serveWS(writer http.ResponseWriter, request *http.Request) {
 	player := NewPlayer(conn, m, gameIdInt, username)
 	m.addPlayer(gameIdInt, player)
 
+	game := m.Games[gameIdInt]
+	data, err := json.Marshal(game)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	go player.ReadEvents()
 	go player.WriteEvents()
 
+	sendEventToSinglePlayer(EventTeamUpdate, data, player)
 }
 
 func (m *Manager) addPlayer(gameId int, player *Player) {
@@ -135,6 +143,13 @@ func (m *Manager) removePlayer(player *Player) {
 		}
 	}
 
+	game := m.Games[player.gameId]
+	data, err := json.Marshal(game)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	sendEvent(EventTeamUpdate, data, game.AllPlayers)
 }
 
 func checkOrigin(_ *http.Request) bool {
