@@ -46,6 +46,14 @@ func (g *Game) SwitchTeam(player *Player, selectedTeam string) (*Game, error) {
 }
 
 func (g *Game) CanGameStart() bool {
+	if len(g.AllPlayers) < 2 {
+		return false
+	}
+
+	if len(g.RedTeam) < 1 || len(g.BlueTeam) < 1 {
+		return false
+	}
+
 	okToStart := true
 	for player := range g.AllPlayers {
 		if !player.ready {

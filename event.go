@@ -15,6 +15,7 @@ const (
 	EventReady           = "ready"
 	EventGameStart       = "game_start"
 	EventGameStartUpdate = "game_start_update"
+	EventGameCanStart    = "game_can_start"
 	EventRoundEnd        = "round_end"
 	EventCorrect         = "correct"
 	EventIncorrect       = "incorrect"

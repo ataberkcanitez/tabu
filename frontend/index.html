@@ -193,6 +193,10 @@
                 this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores);
                 refreshTeams();
                 break;
+
+            case "game_can_start":
+                alert("Game can start!");
+                break;
             default:
                 alert("Unknown event type: " + event.type);
                 break;

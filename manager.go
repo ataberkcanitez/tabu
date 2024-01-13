@@ -198,6 +198,11 @@ func Ready(_ Event, p *Player) error {
 	}
 
 	sendEvent(EventTeamUpdate, data, game.AllPlayers)
+
+	if game.CanGameStart() {
+		sendEvent(EventGameCanStart, nil, game.AllPlayers)
+	}
+
 	return nil
 }
 
@@ -211,8 +216,8 @@ func GameStart(_ Event, p *Player) error {
 		return err
 	}
 
-	sendEvent(EventGameStartUpdate, data, game.AllPlayers)
 	go game.Start()
+	sendEvent(EventGameStartUpdate, data, game.AllPlayers)
 	return nil
 }
 
