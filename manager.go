@@ -87,7 +87,7 @@ func (m *Manager) serveWS(writer http.ResponseWriter, request *http.Request) {
 		http.Error(writer, "Missing username", http.StatusBadRequest)
 		return
 	}
-	log.Println("New Connection")
+	log.Printf("New connection: username: %s\n", username)
 	conn, err := websocketUpgrade.Upgrade(writer, request, nil)
 	if err != nil {
 		log.Println(err)
