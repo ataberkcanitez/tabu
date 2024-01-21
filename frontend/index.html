@@ -243,8 +243,6 @@
         }
 
         var payload = event.payload;
-
-
         switch (event.type) {
             case "team_update":
                 this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores, payload.narrator, payload.round);
@@ -252,7 +250,11 @@
                 break;
 
             case "game_can_start":
-                showStartGameButton();
+                if (payload.can_start) {
+                    showStartGameButton();
+                } else {
+                    hideStartGameButton();
+                }
                 break;
 
             case "game_start_update":
@@ -271,10 +273,7 @@
                 break;
 
             case "round_end":
-                alert("Round (" + payload.round + ") Ended! Red Team: " + payload.red_team_score + " Blue Team: " + payload.blue_team_score);
                 updateLayoutRoundEnd();
-
-
                 break;
 
             default:
@@ -451,6 +450,10 @@
 
     function startNewRound() {
         sendEvent("start_new_round", {});
+    }
+
+    function hideStartGameButton() {
+        document.getElementById("startGameBtn").style.display = "none";
     }
 
 </script>

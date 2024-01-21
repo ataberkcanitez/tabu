@@ -193,6 +193,8 @@ func SelectTeam(event Event, player *Player) error {
 	}
 
 	sendEvent(EventTeamUpdate, data, game.AllPlayers)
+	//
+	canGameStart(game)
 	return nil
 }
 
@@ -210,11 +212,25 @@ func Ready(_ Event, p *Player) error {
 	}
 
 	sendEvent(EventTeamUpdate, data, game.AllPlayers)
+	canGameStart(game)
 
-	if game.CanGameStart() {
-		sendEvent(EventGameCanStart, nil, game.AllPlayers)
+	return nil
+}
+
+func canGameStart(game *Game) error {
+	type GameCanStart struct {
+		CanStart bool `json:"can_start"`
 	}
 
+	canGameStart := &GameCanStart{
+		CanStart: game.CanGameStart(),
+	}
+	data, err := json.Marshal(canGameStart)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	sendEvent(EventGameCanStart, data, game.AllPlayers)
 	return nil
 }
 
