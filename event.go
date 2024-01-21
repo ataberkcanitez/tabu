@@ -22,6 +22,7 @@ const (
 	EventPass            = "pass"
 	EventScoreUpdate     = "score_update"
 	EventRoundUpdate     = "round"
+	EventStartNewRound   = "start_new_round"
 )
 
 type SelectTeamEvent struct {

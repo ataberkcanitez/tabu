@@ -40,6 +40,17 @@ func (m *Manager) setupEventHandlers() {
 	m.handlers[EventCorrect] = CorrectGuess
 	m.handlers[EventIncorrect] = IncorrectGuess
 	m.handlers[EventPass] = PassTheCard
+	m.handlers[EventStartNewRound] = StartNewRound
+}
+
+func StartNewRound(event Event, p *Player) error {
+	game := p.manager.Games[p.gameId]
+	if game.Round.RedTeamTurn {
+		game.startRoundForBlueTeam()
+	} else {
+		game.startRoundForRedTeam()
+	}
+	return nil
 }
 
 func (m *Manager) CreateGame(w http.ResponseWriter, r *http.Request) {

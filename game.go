@@ -16,6 +16,8 @@ type Game struct {
 	Scores     map[string]int `json:"scores"`
 	Narrator   string         `json:"narrator"`
 	Round      *Round         `json:"round"`
+	Timer      *time.Timer    `json:"-"`
+	RoundIdx   int            `json:"-"`
 }
 
 type Round struct {
@@ -41,6 +43,8 @@ func NewGame() *Game {
 		IsStarted:  false,
 		Scores:     scoresMap,
 		Round:      nil,
+		Timer:      nil,
+		RoundIdx:   0,
 	}
 }
 
@@ -80,16 +84,8 @@ func (g *Game) Start() {
 		g.endGame()
 	}()
 
-	roundIdx := 0
-	taboos := TaboosFromJson()
-
-	g.startRoundForRedTeam(taboos, roundIdx)
-	roundIdx++
+	g.startRoundForRedTeam()
 }
-
-/**
-{"type":"round","payload":{"taboo":{"word":"gökdelen","banned_words":["yüksek bina","şehir manzarası","ofis","kat"]},"red_team_turn":true,"blue_team_turn":false,"narrator":"ataberk"}}
-*/
 
 func (g *Game) endGame() {
 	for player := range g.AllPlayers {
@@ -134,10 +130,10 @@ func (g *Game) Pass() error {
 	return nil
 }
 
-func (g *Game) startRoundForRedTeam(taboos []Taboo, roundIdx int) {
+func (g *Game) startRoundForRedTeam() {
+	taboos := TaboosFromJson()
 	currentTaboo := g.selectRandomTaboo(taboos)
-	redTeamIdx := roundIdx / 2
-	idx := 0
+	redTeamIdx := g.RoundIdx / 2
 	round := &Round{
 		Taboo:        currentTaboo,
 		RedTeamTurn:  true,
@@ -146,18 +142,52 @@ func (g *Game) startRoundForRedTeam(taboos []Taboo, roundIdx int) {
 	}
 	g.Round = round
 	for player, _ := range g.RedTeam {
-		if idx == redTeamIdx {
+		if g.RoundIdx == redTeamIdx {
 			g.Narrator = player.Username
 			round.Narrator = player.Username
+			break
 		}
-		idx++
 	}
 
+	g.RoundIdx++
+
 	g.NotifyPlayersForRoundEvent()
+
+	g.Timer = time.NewTimer(10 * time.Second)
+	go func() {
+		<-g.Timer.C
+		g.ChangeTeamAndStartNewRound()
+	}()
 }
 
-func (g *Game) startRoundForBlueTeam(taboos []Taboo, roundIdx int) {
+func (g *Game) startRoundForBlueTeam() {
+	taboos := TaboosFromJson()
+	currentTaboo := g.selectRandomTaboo(taboos)
+	blueTeamIdx := (g.RoundIdx - 1) / 2
+	round := &Round{
+		Taboo:        currentTaboo,
+		RedTeamTurn:  false,
+		BlueTeamTurn: true,
+		Narrator:     "",
+	}
 
+	g.Round = round
+	for player, _ := range g.BlueTeam {
+		if g.RoundIdx == blueTeamIdx {
+			g.Narrator = player.Username
+			round.Narrator = player.Username
+			break
+		}
+	}
+
+	g.RoundIdx++
+	g.NotifyPlayersForRoundEvent()
+
+	g.Timer = time.NewTimer(10 * time.Second)
+	go func() {
+		<-g.Timer.C
+		g.ChangeTeamAndStartNewRound()
+	}()
 }
 
 func (g *Game) NotifyPlayersForRoundEvent() {
@@ -179,3 +209,40 @@ func (g *Game) selectRandomTaboo(taboos []Taboo) Taboo {
 	r := rand.New(s)
 	return taboos[r.Intn(len(taboos))]
 }
+
+func (g *Game) ChangeTeamAndStartNewRound() {
+	if g.Timer != nil {
+		g.Timer.Stop()
+	}
+
+	g.NotifyPlayersRoundFinished()
+}
+
+func (g *Game) NotifyPlayersRoundFinished() {
+	type RoundFinished struct {
+		Round         int `json:"round"`
+		RedTeamScore  int `json:"red_team_score"`
+		BlueTeamScore int `json:"blue_team_score"`
+	}
+
+	roundFinished := RoundFinished{
+		Round:         g.RoundIdx,
+		RedTeamScore:  g.Scores["red"],
+		BlueTeamScore: g.Scores["blue"],
+	}
+	data, err := json.Marshal(roundFinished)
+	if err != nil {
+		fmt.Printf("failed to marshal payload: %v\n", err)
+		return
+	}
+	for player, _ := range g.AllPlayers {
+		player.egress <- Event{
+			Type:    EventRoundEnd,
+			Payload: data,
+		}
+	}
+}
+
+// TODO: change timer from 10 seconds to 60 seconds.
+// TODO: every time round changes, we are not able to update the narrator. update the narrator.
+// check users permissions to see the taboo card, now it is broken.

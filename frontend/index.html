@@ -21,6 +21,9 @@
         <button id="startGameBtn" style="display: none; margin-top: 5px; margin-bottom: 5px;" onclick="startGame();"
                 type="button" class="btn btn-primary btn-lg btn-block">Start the Game!
         </button>
+        <button id="startNewRoundBtn" style="display: none; margin-top: 5px; margin-bottom: 5px;" onclick="startNewRound();"
+                type="button" class="btn btn-primary btn-lg btn-block">Start new round!
+        </button>
     </div>
 
     <div class="container" id="taboo-card-container" style="display: none;">
@@ -240,6 +243,8 @@
         }
 
         var payload = event.payload;
+
+
         switch (event.type) {
             case "team_update":
                 this.game = new Game(payload.game_id, payload.red_team, payload.blue_team, payload.all_players, payload.is_started, payload.scores, payload.narrator, payload.round);
@@ -263,6 +268,13 @@
             case "score_update":
                 this.game.scores = payload.scores;
                 updateScoreLayout(event.payload);
+                break;
+
+            case "round_end":
+                alert("Round (" + payload.round + ") Ended! Red Team: " + payload.red_team_score + " Blue Team: " + payload.blue_team_score);
+                updateLayoutRoundEnd();
+
+
                 break;
 
             default:
@@ -361,6 +373,19 @@
     }
 
     function prepareNewRoundLayouts(taboo) {
+
+        document.getElementById("startNewRoundBtn").style.display = "none";
+        document.getElementById("taboo-card-container").style.display = "block";
+        document.getElementById("taboo-card").style.display = "block";
+        document.getElementById("taboo-word").classList.remove("bg-danger");
+        document.getElementById("taboo-word").classList.remove("bg-info");
+
+        if (this.game.round.blue_team_turn) {
+            document.getElementById("taboo-word").classList.add("bg-info");
+        } else {
+            document.getElementById("taboo-word").classList.add("bg-danger");
+        }
+
         if (!shouldUserSeeTabooCard()) {
             prepareGuesserLayout();
             return;
@@ -417,6 +442,15 @@
     function prepareGuesserLayout() {
         document.getElementById("taboo-word").innerHTML = "You are not allowed to see the card";
         document.getElementById("taboo-banned-words").innerHTML = "";
+    }
+
+    function updateLayoutRoundEnd() {
+        document.getElementById("taboo-card-container").style.display = "none";
+        document.getElementById("startNewRoundBtn").style.display = "block";
+    }
+
+    function startNewRound() {
+        sendEvent("start_new_round", {});
     }
 
 </script>
