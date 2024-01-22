@@ -1,82 +1,672 @@
 [
   {
     "word": "gözlük",
-    "banned_words": ["göz", "cam", "göz aksesuarı", "lens"]
+    "banned_words": [
+      "göz",
+      "cam",
+      "göz aksesuarı",
+      "lens"
+    ]
   },
   {
     "word": "bisiklet",
-    "banned_words": ["tekerlekli araç", "pedal", "zil", "bisiklet yolu"]
+    "banned_words": [
+      "tekerlekli araç",
+      "pedal",
+      "zil",
+      "bisiklet yolu"
+    ]
   },
   {
     "word": "kitap",
-    "banned_words": ["yazılı eser", "sayfa", "kapağı olan", "yazar"]
+    "banned_words": [
+      "yazılı eser",
+      "sayfa",
+      "kapağı olan",
+      "yazar"
+    ]
   },
   {
     "word": "plaj",
-    "banned_words": ["kum", "güneş", "deniz", "şemsiye"]
+    "banned_words": [
+      "kum",
+      "güneş",
+      "deniz",
+      "şemsiye"
+    ]
   },
   {
     "word": "piano",
-    "banned_words": ["müzik aleti", "tuşlu", "notalar", "klavye"]
+    "banned_words": [
+      "müzik aleti",
+      "tuşlu",
+      "notalar",
+      "klavye"
+    ]
   },
   {
     "word": "balık",
-    "banned_words": ["suda yaşayan", "yüzgeçli", "lezzetli", "akvaryum"]
+    "banned_words": [
+      "suda yaşayan",
+      "yüzgeçli",
+      "lezzetli",
+      "akvaryum"
+    ]
   },
   {
     "word": "gökyüzü",
-    "banned_words": ["mavi", "bulutlar", "güneş", "uzay"]
+    "banned_words": [
+      "mavi",
+      "bulutlar",
+      "güneş",
+      "uzay"
+    ]
   },
   {
     "word": "bisiklet",
-    "banned_words": ["tekerlekli araç", "pedal", "zil", "bisiklet yolu"]
+    "banned_words": [
+      "tekerlekli araç",
+      "pedal",
+      "zil",
+      "bisiklet yolu"
+    ]
   },
   {
     "word": "kamera",
-    "banned_words": ["fotoğraf çeken", "objektif", "poz verme", "video kaydı"]
+    "banned_words": [
+      "fotoğraf çeken",
+      "objektif",
+      "poz verme",
+      "video kaydı"
+    ]
   },
   {
     "word": "kahve",
-    "banned_words": ["siyah içecek", "kahve çekirdeği", "enerji", "fincan"]
+    "banned_words": [
+      "siyah içecek",
+      "kahve çekirdeği",
+      "enerji",
+      "fincan"
+    ]
   },
   {
     "word": "gitar",
-    "banned_words": ["müzik aleti", "tel telli", "akustik", "akor"]
+    "banned_words": [
+      "müzik aleti",
+      "tel telli",
+      "akustik",
+      "akor"
+    ]
   },
   {
     "word": "şemsiye",
-    "banned_words": ["yağmur", "güneş", "katlanabilir", "koruma"]
+    "banned_words": [
+      "yağmur",
+      "güneş",
+      "katlanabilir",
+      "koruma"
+    ]
   },
   {
     "word": "gözlük",
-    "banned_words": ["göz", "cam", "göz aksesuarı", "lens"]
+    "banned_words": [
+      "göz",
+      "cam",
+      "göz aksesuarı",
+      "lens"
+    ]
   },
   {
     "word": "deniz",
-    "banned_words": ["okyanus", "kum", "dalga", "gemiler"]
+    "banned_words": [
+      "okyanus",
+      "kum",
+      "dalga",
+      "gemiler"
+    ]
   },
   {
     "word": "kalem",
-    "banned_words": ["yazma aracı", "mürekkep", "kâğıt", "dolma kalem"]
+    "banned_words": [
+      "yazma aracı",
+      "mürekkep",
+      "kâğıt",
+      "dolma kalem"
+    ]
   },
   {
     "word": "gazete",
-    "banned_words": ["haber", "yazılı basın", "matbu", "okuma"]
+    "banned_words": [
+      "haber",
+      "yazılı basın",
+      "matbu",
+      "okuma"
+    ]
   },
   {
     "word": "ayakkabı",
-    "banned_words": ["ayak giyimi", "taban", "topuklu", "spor"]
+    "banned_words": [
+      "ayak giyimi",
+      "taban",
+      "topuklu",
+      "spor"
+    ]
   },
   {
     "word": "gökdelen",
-    "banned_words": ["yüksek bina", "şehir manzarası", "ofis", "kat"]
+    "banned_words": [
+      "yüksek bina",
+      "şehir manzarası",
+      "ofis",
+      "kat"
+    ]
   },
   {
     "word": "kuş",
-    "banned_words": ["uçan hayvan", "tüy", "kanat", "kuş kafesi"]
+    "banned_words": [
+      "uçan hayvan",
+      "tüy",
+      "kanat",
+      "kuş kafesi"
+    ]
   },
   {
     "word": "tiyatro",
-    "banned_words": ["sahne sanatları", "oyun", "perde", "aktör"]
+    "banned_words": [
+      "sahne sanatları",
+      "oyun",
+      "perde",
+      "aktör"
+    ]
+  },
+  {
+    "word": "ay",
+    "banned_words": [
+      "gece",
+      "güneş",
+      "uzay",
+      "doğal uydu",
+      "astronomide"
+    ]
+  },
+  {
+    "word": "satranç",
+    "banned_words": [
+      "oyun",
+      "tahta",
+      "piyon",
+      "kale",
+      "şah"
+    ]
+  },
+  {
+    "word": "köprü",
+    "banned_words": [
+      "yol",
+      "su",
+      "yapı",
+      "araç",
+      "geçit"
+    ]
+  },
+  {
+    "word": "yağmur",
+    "banned_words": [
+      "hava",
+      "su",
+      "doğal olay",
+      "yağmur yağmak",
+      "nem"
+    ]
+  },
+  {
+    "word": "kitap",
+    "banned_words": [
+      "yazar",
+      "okur",
+      "kağıt",
+      "harf",
+      "düşünce"
+    ]
+  },
+  {
+    "word": "aşk",
+    "banned_words": [
+      "sevgi",
+      "romantizm",
+      "tutku",
+      "cinsellik",
+      "aşık olmak"
+    ]
+  },
+  {
+    "word": "hayal",
+    "banned_words": [
+      "rüya",
+      "fantezi",
+      "düş",
+      "umut",
+      "sanrı"
+    ]
+  },
+  {
+    "word": "korku",
+    "banned_words": [
+      "endişe",
+      "panik",
+      "fobi",
+      "ürkütücü",
+      "tehlike"
+    ]
+  },
+  {
+    "word": "mutluluk",
+    "banned_words": [
+      "sevinç",
+      "neşe",
+      "keyif",
+      "tatmin",
+      "başarı"
+    ]
+  },
+  {
+    "word": "telefon",
+    "banned_words": [
+      "aramak",
+      "mesaj göndermek",
+      "internet",
+      "araç",
+      "iletişim"
+    ]
+  },
+  {
+    "word": "araba",
+    "banned_words": [
+      "tekerlek",
+      "yol",
+      "motor",
+      "sürücü",
+      "ulaşım"
+    ]
+  },
+  {
+    "word": "ev",
+    "banned_words": [
+      "çatı",
+      "duvar",
+      "pencere",
+      "kapı",
+      "yuva"
+    ]
+  },
+  {
+    "word": "okul",
+    "banned_words": [
+      "öğrenci",
+      "öğretmen",
+      "ders",
+      "bilgi",
+      "eğitim"
+    ]
+  },
+  {
+    "word": "hastane",
+    "banned_words": [
+      "doktor",
+      "hemşire",
+      "hasta",
+      "sağlık",
+      "tedavi"
+    ]
+  },
+  {
+    "word": "park",
+    "banned_words": [
+      "ağaç",
+      "çimler",
+      "bank",
+      "oyun alanı",
+      "dinlence"
+    ]
+  },
+  {
+    "word": "deniz",
+    "banned_words": [
+      "su",
+      "kum",
+      "dalga",
+      "balık",
+      "kıyı"
+    ]
+  },
+  {
+    "word": "dağ",
+    "banned_words": [
+      "tepe",
+      "kaya",
+      "orman",
+      "kar",
+      "yükseklik"
+    ]
+  },
+  {
+    "word": "güneş",
+    "banned_words": [
+      "ışık",
+      "ısı",
+      "yıldız",
+      "gündüz",
+      "doğan"
+    ]
+  },
+  {
+    "word": "ay",
+    "banned_words": [
+      "gece",
+      "gökyüzü",
+      "doğal uydu",
+      "parlak",
+      "evren"
+    ]
+  },
+  {
+    "word": "yıldız",
+    "banned_words": [
+      "gökyüzü",
+      "parlak",
+      "gece",
+      "ışık",
+      "uzay"
+    ]
+  },
+  {
+    "word": "bulut",
+    "banned_words": [
+      "gökyüzü",
+      "hava",
+      "yağmur",
+      "kar",
+      "beyaz"
+    ]
+  },
+  {
+    "word": "rüya",
+    "banned_words": [
+      "uyku",
+      "fantezi",
+      "hayal",
+      "dilek",
+      "aşk"
+    ]
+  },
+  {
+    "word": "korku",
+    "banned_words": [
+      "endişe",
+      "panik",
+      "fobi",
+      "ürkütücü",
+      "tehlike"
+    ]
+  },
+  {
+    "word": "mutluluk",
+    "banned_words": [
+      "sevinç",
+      "neşe",
+      "keyif",
+      "tatmin",
+      "başarı"
+    ]
+  },
+  {
+    "word": "üzüntü",
+    "banned_words": [
+      "keder",
+      "acı",
+      "pişmanlık",
+      "umutsuzluk",
+      "üzgünlük"
+    ]
+  },
+  {
+    "word": "öfke",
+    "banned_words": [
+      "kızgınlık",
+      "sinirlilik",
+      "asabiyet",
+      "dargınlık",
+      "nefret"
+    ]
+  },
+  {
+    "word": "şarkı",
+    "banned_words": [
+      "müzik",
+      "söz",
+      "beste",
+      "şarkıcı",
+      "albüm"
+    ]
+  },
+  {
+    "word": "film",
+    "banned_words": [
+      "sinema",
+      "oyun",
+      "aktör",
+      "aktris",
+      "yönetmen"
+    ]
+  },
+  {
+    "word": "kitap",
+    "banned_words": [
+      "yazar",
+      "okur",
+      "kağıt",
+      "harf",
+      "düşünce"
+    ]
+  },
+  {
+    "word": "hayvan",
+    "banned_words": [
+      "köpek",
+      "kedi",
+      "balık",
+      "kuş",
+      "insan"
+    ]
+  },
+  {
+    "word": "bitki",
+    "banned_words": [
+      "ağaç",
+      "çiçek",
+      "ot",
+      "yaprak",
+      "meyve"
+    ]
+  },
+  {
+    "word": "yemek",
+    "banned_words": [
+      "mutfak",
+      "tabak",
+      "kaşık",
+      "bıçak",
+      "tatlı"
+    ]
+  },
+  {
+    "word": "içecek",
+    "banned_words": [
+      "su",
+      "meyve suyu",
+      "kahve",
+      "çay",
+      "alkol"
+    ]
+  },
+  {
+    "word": "spor",
+    "banned_words": [
+      "futbol",
+      "basketbol",
+      "voleybol",
+      "tenis",
+      "eskrim"
+    ]
+  },
+  {
+    "word": "ulaşım",
+    "banned_words": [
+      "araba",
+      "otobüs",
+      "metro",
+      "uçak",
+      "gemi"
+    ]
+  },
+  {
+    "word": "meslek",
+    "banned_words": [
+      "doktor",
+      "mühendis",
+      "öğretmen",
+      "polis",
+      "aşçı"
+    ]
+  },
+  {
+    "word": "ülke",
+    "banned_words": [
+      "şehir",
+      "bölge",
+      "başkent",
+      "kıyı",
+      "dağlık"
+    ]
+  },
+  {
+    "word": "şehir",
+    "banned_words": [
+      "ülke",
+      "bölge",
+      "başkent",
+      "kıyı",
+      "dağlık"
+    ]
+  },
+  {
+    "word": "bölge",
+    "banned_words": [
+      "ülke",
+      "şehir",
+      "başkent",
+      "kıyı",
+      "dağlık"
+    ]
+  },
+  {
+    "word": "başkent",
+    "banned_words": [
+      "ülke",
+      "şehir",
+      "bölge",
+      "kıyı",
+      "dağlık"
+    ]
+  },
+  {
+    "word": "kıyı",
+    "banned_words": [
+      "ülke",
+      "şehir",
+      "bölge",
+      "başkent",
+      "dağlık"
+    ]
+  },
+  {
+    "word": "dağlık",
+    "banned_words": [
+      "ülke",
+      "şehir",
+      "bölge",
+      "başkent",
+      "kıyı"
+    ]
+  },
+  {
+    "word": "aşk",
+    "banned_words": [
+      "sevgi",
+      "romantizm",
+      "tutku",
+      "cinsellik",
+      "aşık olmak"
+    ]
+  },
+  {
+    "word": "hayal",
+    "banned_words": [
+      "rüya",
+      "fantezi",
+      "düş",
+      "umut",
+      "sanrı"
+    ]
+  },
+  {
+    "word": "korku",
+    "banned_words": [
+      "endişe",
+      "panik",
+      "fobi",
+      "ürkütücü",
+      "tehlike"
+    ]
+  },
+  {
+    "word": "mutluluk",
+    "banned_words": [
+      "sevinç",
+      "neşe",
+      "keyif",
+      "tatmin",
+      "başarı"
+    ]
+  },
+  {
+    "word": "üzüntü",
+    "banned_words": [
+      "keder",
+      "acı",
+      "pişmanlık",
+      "umutsuzluk",
+      "üzgünlük"
+    ]
+  },
+  {
+    "word": "öfke",
+    "banned_words": [
+      "kızgınlık",
+      "sinirlilik",
+      "asabiyet",
+      "dargınlık",
+      "nefret"
+    ]
+  },
+  {
+    "word": "iyi",
+    "banned_words": [
+      "beğenmek",
+      "hoşlanmak",
+      "güzel",
+      "mükemmel",
+      "değerli"
+    ]
   }
 ]
